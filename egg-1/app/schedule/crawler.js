@@ -4,8 +4,8 @@ const sd = require('silly-datetime')
 module.exports = {
   schedule: {
     immediate: false,
-    cron: '0 20 17,18 * * *',
-    // interval: '1m',
+    // cron: '0 20 17,18 * * *',
+    interval: '10s',
     type: 'worker', // 指定所有的 worker 都需要执行
   },
   async task(ctx) {
@@ -27,6 +27,7 @@ module.exports = {
       dataType: 'text',
       data: param,
     })
+    // console.log(res, '+++++++++++++++++++')
     let cookieArr = res.headers['set-cookie']
     cookieArr = cookieArr.map((v) => v.split(';')[0])
     const result = await ctx.curl(
@@ -47,14 +48,16 @@ module.exports = {
         .each(function () {
           arr.push($(this).text())
         })
-      jsonArr.push({
+      const d = {
         NAME1: arr[0].trim(),
         DATATIME: arr[1],
         DDMEAN: arr[2],
         YESTODAY: arr[3],
         RAISE: arr[4],
         CREATEDATE: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
-      })
+      }
+      // console.log(d, '==============')
+      jsonArr.push(d)
     })
     for (let i = 0; i < jsonArr.length; i++) {
       await ctx.service.ccf.insert(jsonArr[i])
