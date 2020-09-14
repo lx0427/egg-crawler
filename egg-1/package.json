@@ -12,6 +12,7 @@
     "egg-mysql": "^3.0.0",
     "egg-oracle": "^4.0.0",
     "egg-scripts": "^2.11.0",
+    "oracledb": "^5.0.0",
     "silly-datetime": "^0.1.2"
   },
   "devDependencies": {

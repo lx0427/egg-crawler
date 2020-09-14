@@ -1,11 +1,7 @@
-const cheerio = require('cheerio')
-const sd = require('silly-datetime')
-
 module.exports = {
   schedule: {
     immediate: false,
-    // cron: '0 20 17,18 * * *',
-    interval: '10s',
+    cron: '0 0,10,20,30 17,18 * * *',
     type: 'worker', // 指定所有的 worker 都需要执行
   },
   async task(ctx) {
@@ -27,41 +23,22 @@ module.exports = {
       dataType: 'text',
       data: param,
     })
-    // console.log(res, '+++++++++++++++++++')
     let cookieArr = res.headers['set-cookie']
     cookieArr = cookieArr.map((v) => v.split(';')[0])
-    const result = await ctx.curl(
-      'http://cnc.ccf.com.cn/informs/showinformindex_zs.php?itemid=&prodid=410000&type=dd',
-      {
-        dataType: 'text',
-        headers: {
-          Cookie: cookieArr.join('; '),
-        },
+    console.log(cookieArr)
+
+    async function clawlerData(prodid) {
+      const url = `http://cnc.ccf.com.cn/informs/showinformindex_zs.php?itemid=&prodid=${prodid}&type=dd`
+      // console.log(url, '++++++++++++++++++')
+      const jsonArr = await ctx.helper.getDomData(url, cookieArr)
+      // console.log(jsonArr, 'xxxxxxxx')
+      for (let i = 0; i < jsonArr.length; i++) {
+        await ctx.service.ccf.insert(jsonArr[i].join(','))
       }
-    )
-    const $ = cheerio.load(result.data)
-    const jsonArr = []
-    $('tr.px14').each(function () {
-      const arr = []
-      $(this)
-        .children('td')
-        .each(function () {
-          arr.push($(this).text())
-        })
-      const d = {
-        NAME1: arr[0].trim(),
-        DATATIME: arr[1],
-        DDMEAN: arr[2],
-        YESTODAY: arr[3],
-        RAISE: arr[4],
-        CREATEDATE: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
-      }
-      // console.log(d, '==============')
-      jsonArr.push(d)
-    })
-    for (let i = 0; i < jsonArr.length; i++) {
-      await ctx.service.ccf.insert(jsonArr[i])
     }
-    // console.log(jsonArr, '==========')
+
+    await clawlerData('210000')
+    await clawlerData('220000')
+    await clawlerData('410000')
   },
 }
