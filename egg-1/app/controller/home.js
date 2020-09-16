@@ -5,25 +5,8 @@ const Controller = require('egg').Controller
 class HomeController extends Controller {
   async index() {
     const { ctx } = this
-    const param = {
-      custlogin: 1,
-      url: '',
-      lng: 120.26948,
-      lat: 30.20782,
-      s: '',
-      action: 'login',
-      username: 'zjhyjt',
-      password: 31121500,
-      'imageField.x': 41,
-      'imageField.y': 8,
-    }
 
-    const res = await ctx.curl('http://cnc.ccf.com.cn/member/member.php', {
-      method: 'POST',
-      dataType: 'text',
-      data: param,
-    })
-    // console.log(res, '+++++++++++++++++++')
+    const res = await ctx.service.ccf.login()
     let cookieArr = res.headers['set-cookie']
     cookieArr = cookieArr.map((v) => v.split(';')[0])
     const jsonArr = await ctx.helper.getDomData(

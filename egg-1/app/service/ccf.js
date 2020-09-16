@@ -3,22 +3,56 @@
 const Service = require('egg').Service
 
 class CcfService extends Service {
-  // mysgl
-  // async insert(data) {
-  //   await this.app.mysql.insert('scrapy_price_ccf_ptamegpoly_dd', data)
-  // }
   /**
    * 向oracle中插入数据
-   * @param {*} data | ,连接的数据
+   * @param {*} jsonArr | ,连接的数据
    */
-  async insert(data) {
+  async insert(jsonArr) {
     const { ctx } = this
     const connection = await ctx.helper.connectOracle()
-    const str = `insert into test_ptameg(NAME1,DATATIME,DDMEAN,YESTODAY,RAISE,CREATEDATE) values (${data})`
-    // console.log(data, '==========')
-    const result = await connection.execute(str)
+    for (let i = 0; i < jsonArr.length; i++) {
+      const str = `insert into test_ptameg(NAME1,DATATIME,DDMEAN,YESTODAY,RAISE,CREATEDATE) values (
+        ${jsonArr[i].join(',')})`
+      await connection.execute(str)
+    }
     await connection.close()
-    return result
+  }
+
+  /**
+   * 登录
+   * @param {*} time 执行次数
+   */
+  async login(time = 0) {
+    try {
+      if (time >= 3) {
+        ctx.logger.error('连续3次登录错误')
+        return false
+      }
+      const { ctx } = this
+      const param = {
+        custlogin: 1,
+        url: '',
+        lng: 120.26948,
+        lat: 30.20782,
+        s: '',
+        action: 'login',
+        username: 'zjhyjt',
+        password: 31121500,
+        'imageField.x': 41,
+        'imageField.y': 8,
+      }
+      const res = await ctx.curl('http://cnc.ccf.com.cn/member/member.php', {
+        method: 'POST',
+        dataType: 'text',
+        data: param,
+      })
+      return res
+    } catch (err) {
+      // 记录错误
+      ctx.logger.error(err)
+      // 重新执行登录
+      return this.login(++time)
+    }
   }
 }
 
