@@ -11,7 +11,8 @@ class CcfService extends Service {
     const { ctx } = this
     const connection = await ctx.helper.connectOracle()
     for (let i = 0; i < jsonArr.length; i++) {
-      const str = `insert into test_ptameg(NAME1,DATATIME,DDMEAN,YESTODAY,RAISE,CREATEDATE) values (
+      // test_ptameg 测试表
+      const str = `insert into scrapy_data_ccf_price(NAME1,DATATIME,DDMEAN,YESTODAY,RAISE,CREATEDATE) values (
         ${jsonArr[i].join(',')})`
       await connection.execute(str)
     }
