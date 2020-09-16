@@ -23,12 +23,12 @@ class CcfService extends Service {
    * @param {*} time 执行次数
    */
   async login(time = 0) {
+    const { ctx } = this
     try {
       if (time >= 3) {
         ctx.logger.error('连续3次登录错误')
         return false
       }
-      const { ctx } = this
       const param = {
         custlogin: 1,
         url: '',
