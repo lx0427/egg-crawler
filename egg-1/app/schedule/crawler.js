@@ -2,7 +2,7 @@ module.exports = {
   schedule: {
     immediate: false,
     // cron: '0 0,10,20,30 17 * * *',
-    cron: '0 */5 16,17 * * *',
+    cron: '0 */10 16,17 * * *',
     // interval: '20s',
     type: 'worker', // 指定所有的 worker 都需要执行
   },
