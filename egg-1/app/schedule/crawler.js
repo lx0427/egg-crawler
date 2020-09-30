@@ -1,9 +1,9 @@
 module.exports = {
   schedule: {
     immediate: false,
-    // cron: '0 0,5,10,15,20,25,30,35,40,45,50,55 * * * *',
-    cron: '0 0,10,20,30 17 * * *',
-    // interval: '10s',
+    // cron: '0 0,10,20,30 17 * * *',
+    cron: '0 */5 16,17 * * *',
+    // interval: '20s',
     type: 'worker', // 指定所有的 worker 都需要执行
   },
   async task(ctx) {
@@ -19,6 +19,7 @@ module.exports = {
 
       await clawlerData('210000', cookieArr)
       await clawlerData('220000', cookieArr)
+      await clawlerData('310000', cookieArr)
       await clawlerData('410000', cookieArr)
     } catch (err) {
       ctx.logger.error(err)
