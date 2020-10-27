@@ -59,21 +59,7 @@ module.exports = {
   },
   async getExchangeRateDomData() {
     const { ctx } = this
-    const param = {
-      erectDate: '',
-      nothing: '',
-      pjname: '美元',
-      head: 'head_620.js',
-      bottom: 'bottom_591.js',
-    }
-    const res = await ctx.curl(
-      'https://srh.bankofchina.com/search/whpj/search_cn.jsp',
-      {
-        method: 'POST',
-        dataType: 'text',
-        data: param,
-      }
-    )
+    const res = await ctx.service.exchangeRate.getHtml()
     const $ = cheerio.load(res.data)
     const arr = []
     ctx.body = $('.BOC_main.publish tbody tr')

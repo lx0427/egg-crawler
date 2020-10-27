@@ -16,6 +16,39 @@ class ExchangeRateService extends Service {
     await connection.close()
     return res
   }
+
+  /**
+   * 获取html
+   * @param {*} time 执行次数
+   */
+  async getHtml(time = 0) {
+    const { ctx } = this
+    try {
+      if (time >= 3) {
+        ctx.logger.error('连续3次获取错误')
+        return false
+      }
+      const param = {
+        erectDate: '',
+        nothing: '',
+        pjname: '美元',
+        head: 'head_620.js',
+        bottom: 'bottom_591.js',
+      }
+      const res = await ctx.curl(
+        'https://srh.bankofchina.com/search/whpj/search_cn.jsp',
+        {
+          method: 'POST',
+          dataType: 'text',
+          data: param,
+        }
+      )
+      return res
+    } catch (err) {
+      ctx.logger.error(err)
+      return this.getHtml(++time)
+    }
+  }
 }
 
 module.exports = ExchangeRateService
