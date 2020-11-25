@@ -23,6 +23,12 @@ module.exports = (appInfo) => {
     // myAppName: 'egg',
   }
 
+  config.httpclient = {
+    httpAgent: {
+      timeout: 60 * 1000 * 5,
+    },
+  }
+
   // exports.mysql = {
   //   // 单数据库信息配置
   //   client: {

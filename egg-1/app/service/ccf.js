@@ -11,11 +11,15 @@ class CcfService extends Service {
     const { ctx } = this
     const connection = await ctx.helper.connectOracle()
     for (let i = 0; i < jsonArr.length; i++) {
-      // test_ptameg 测试表
-      // const str = `insert into test_ptameg(NAME1,DATATIME,DDMEAN,YESTODAY,RAISE,CREATEDATE) values (
       const str = `insert into scrapy_data_ccf_price(NAME1,DATATIME,DDMEAN,YESTODAY,RAISE,CREATEDATE) values (
         ${jsonArr[i].join(',')})`
       await connection.execute(str)
+
+      /* test_ptameg 测试表 */
+      // const str = `insert into test_ptameg(NAME1,DATATIME,DDMEAN,YESTODAY,RAISE,CREATEDATE) values (
+      //   ${jsonArr[i].join(',')})`
+      // const res = await connection.execute(str)
+      // ctx.logger.info(res)
     }
     await connection.close()
   }
@@ -35,19 +39,25 @@ class CcfService extends Service {
         custlogin: 1,
         url: '',
         lng: 120.26948,
-        lat: 30.20782,
+        lat: 30.20784,
         s: '',
         action: 'login',
         username: 'zjhyjt',
         password: 31121500,
-        'imageField.x': 41,
-        'imageField.y': 8,
+        'imageField.x': 34,
+        'imageField.y': 13,
       }
       const res = await ctx.curl('http://cnc.ccf.com.cn/member/member.php', {
         method: 'POST',
         dataType: 'text',
         data: param,
+        // headers: {
+        //   'Content-Type': 'application/x-www-form-urlencoded',
+        //   'Content-Length': 155,
+        // },
+        timeout: 60 * 1000 * 5,
       })
+      ctx.logger.info('登录成功！')
       return res
     } catch (err) {
       // 记录错误
